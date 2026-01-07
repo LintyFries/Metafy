@@ -1,11 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Metafy – Game Meta Analyzer</title>
+
+  <style>
+    /* Global layout */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background-color: #0f172a;
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Header / nav bar */
+    header {
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
+    }
+
+    nav {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .nav-btn {
+      padding: 0.4rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid #334155;
+      background: #020617;
+      color: #e5e7eb;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.15s, border-color 0.15s, transform 0.05s;
+    }
+
+    .nav-btn:hover {
+      background: #111827;
+      border-color: #38bdf8;
+    }
+
+    .nav-btn.active {
+      border-color: #38bdf8;
+      background: #0f172a;
+    }
+
+    /* Page content */
+    main {
+      flex: 1;
+      max-width: 960px;
+      width: 100%;
+      margin: 1.5rem auto 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .hero {
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-size: clamp(1.8rem, 3vw, 2.2rem);
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-subtitle {
+      color: #9ca3af;
+      font-size: 0.95rem;
+      max-width: 40rem;
+    }
+
+    /* Game meta panel */
+    .panel {
+      background: #020617;
+      border-radius: 0.75rem;
+      border: 1px solid #1e293b;
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.75);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.75rem;
+    }
+
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .panel-tag {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid #334155;
+      color: #9ca3af;
+    }
+
+    .panel-body {
+      font-size: 0.9rem;
+      color: #d1d5db;
+      line-height: 1.5;
+    }
+
+    .meta-list {
+      margin-top: 0.5rem;
+      padding-left: 1rem;
+    }
+
+    .meta-list li {
+      margin-bottom: 0.25rem;
+    }
+
+    /* Form section */
+    .input-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+    }
+
+    .input-row input,
+    .input-row select {
+      padding: 0.4rem 0.6rem;
+      border-radius: 0.5rem;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.85rem;
+    }
+
+    .primary-btn {
+      padding: 0.45rem 0.9rem;
+      border-radius: 0.6rem;
+      border: none;
+      background: linear-gradient(135deg, #22d3ee, #3b82f6);
+      color: #020617;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: transform 0.05s, box-shadow 0.1s;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 25px rgba(56, 189, 248, 0.25);
+    }
+
+    /* Per-game sections */
+    .game-section {
+      display: none;
+    }
+
+    .game-section.active {
+      display: block;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #6b7280;
+      padding: 0.75rem 0 1rem 0;
+      border-top: 1px solid #1f2937;
+    }
+  </style>
 </head>
 <body>
-    <h1>Website Hosted by GitHub</h1>
+  <header>
+    <div class="logo">Metafy</div>
+    <nav>
+      <button class="nav-btn active" data-game="warzone">Warzone</button>
+      <button class="nav-btn" data-game="fortnite">Fortnite</button>
+      <button class="nav-btn" data-game="valorant">Valorant</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1 class="hero-title">Meta analysis for your favorite games</h1>
+      <p class="hero-subtitle">
+        Select a game to view a quick snapshot of the current meta, then refine results with filters like platform, mode, or skill bracket.
+      </p>
+    </section>
+
+    <!-- Warzone meta -->
+    <section id="warzone" class="game-section active">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Warzone – Current Meta Snapshot</h2>
+          <span class="panel-tag">Example data</span>
+        </div>
+        <div class="panel-body">
+          <p>These are placeholder notes you can replace with live stats or your own curated summaries.</p>
+          <ul class="meta-list">
+            <li>Popular AR: Kastov‑762 with high‑damage mid‑range setup.</li>
+            <li>Preferred SMG: HRM‑9 for aggressive close‑quarters fights.</li>
+            <li>Utility: Smokes and drill charges for rotations and building clears.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">Filter & request analysis</h3>
+        </div>
+        <div class="panel-body">
+          <p>Use this section later for user input and dynamic analysis.</p>
+          <div class="input-row">
+            <select>
+              <option>All skill levels</option>
+              <option>Casual</option>
+              <option>Ranked / competitive</option>
+            </select>
+
+            <select>
+              <option>All platforms</option>
+              <option>PC</option>
+              <option>Console</option>
+            </select>
+
+            <input type="text" placeholder="Optional: weapon / comp name">
+
+            <button class="primary-btn" type="button">Analyze meta</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fortnite meta -->
+    <section id="fortnite" class="game-section">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Fortnite – Current Meta Snapshot</h2>
+          <span class="panel-tag">Example data</span>
+        </div>
+        <div class="panel-body">
+          <p>Swap this placeholder copy with your Fortnite meta notes once you define them.</p>
+          <ul class="meta-list">
+            <li>Build mode favors high‑mobility loadouts and fast harvesting.</li>
+            <li>No‑build focuses on burst rifles and strong cover control.</li>
+            <li>Rotations built around vehicles and mobility items.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Valorant meta -->
+    <section id="valorant" class="game-section">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Valorant – Current Meta Snapshot</h2>
+          <span class="panel-tag">Example data</span>
+        </div>
+        <div class="panel-body">
+          <p>Use this area for agent comps, map‑specific setups, and economy tips.</p>
+          <ul class="meta-list">
+            <li>Double‑initiator comps on info‑heavy maps.</li>
+            <li>Controller choice varies by map and team comfort.</li>
+            <li>Emphasis on consistent rifle rounds over eco hero plays.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 Metafy – Personal meta analysis tool.
+  </footer>
+
+  <script>
+    // Simple tab navigation for games
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const sections = document.querySelectorAll(".game-section");
+
+    navButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const game = btn.getAttribute("data-game");
+
+        // Update button state
+        navButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        // Show selected section
+        sections.forEach(sec => {
+          sec.classList.toggle("active", sec.id === game);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
