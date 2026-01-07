@@ -1,321 +1,716 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Metafy – Game Meta Analyzer</title>
 
+  <!-- Optional: Google Font similar to the reference -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    /* Global layout */
+    :root {
+      --bg-main: #050816;
+      --bg-elevated: #080b1e;
+      --bg-card: #0c1024;
+      --border-subtle: #1f2437;
+      --accent-purple: #a855f7;
+      --accent-blue: #22d3ee;
+      --accent-green: #22c55e;
+      --accent-red: #f97316;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --radius-lg: 18px;
+      --radius-pill: 999px;
+      --shadow-soft: 0 24px 60px rgba(15, 23, 42, 0.85);
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     body {
-      background-color: #0f172a;
-      color: #e5e7eb;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top left, #1e293b 0, #020617 40%, #000 100%);
+      color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
     a {
-      color: inherit;
       text-decoration: none;
+      color: inherit;
     }
 
-    /* Header / nav bar */
+    /* Top nav */
     header {
-      background: #020617;
-      border-bottom: 1px solid #1e293b;
-      padding: 0.75rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(to bottom, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0));
+      border-bottom: 1px solid rgba(15, 23, 42, 0.8);
+    }
+
+    .nav-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 10;
     }
 
-    .logo {
-      font-weight: 700;
-      font-size: 1.1rem;
-      letter-spacing: 0.05em;
-    }
-
-    nav {
+    .logo-wrap {
       display: flex;
-      gap: 0.75rem;
+      align-items: center;
+      gap: 0.55rem;
     }
 
-    .nav-btn {
-      padding: 0.4rem 0.9rem;
-      border-radius: 999px;
-      border: 1px solid #334155;
-      background: #020617;
-      color: #e5e7eb;
+    .logo-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      background: radial-gradient(circle at 20% 0, #22d3ee, #a855f7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 24px rgba(168, 85, 247, 0.7);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .logo-text-main {
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      font-size: 0.95rem;
+    }
+
+    .logo-text-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.78rem;
+    }
+
+    .nav-pill {
+      padding: 0.25rem 0.85rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      color: var(--text-muted);
+    }
+
+    .nav-pill.active {
+      border-color: rgba(56, 189, 248, 0.9);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.3), rgba(15, 23, 42, 0.9));
+      color: var(--text-main);
+    }
+
+    .nav-cta {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-outline,
+    .btn-filled {
+      font-size: 0.78rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: transparent;
+      color: var(--text-main);
       cursor: pointer;
-      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
       transition: background 0.15s, border-color 0.15s, transform 0.05s;
     }
 
-    .nav-btn:hover {
-      background: #111827;
-      border-color: #38bdf8;
+    .btn-filled {
+      border-color: transparent;
+      background: linear-gradient(135deg, #22d3ee, #a855f7);
+      box-shadow: 0 14px 35px rgba(59, 130, 246, 0.5);
     }
 
-    .nav-btn.active {
-      border-color: #38bdf8;
-      background: #0f172a;
+    .btn-outline:hover {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(148, 163, 184, 1);
     }
 
-    /* Page content */
+    .btn-filled:hover {
+      transform: translateY(-1px);
+    }
+
+    /* Layout */
     main {
       flex: 1;
-      max-width: 960px;
-      width: 100%;
-      margin: 1.5rem auto 2rem auto;
-      padding: 0 1rem;
     }
 
+    .page {
+      max-width: 1120px;
+      margin: 1.6rem auto 2.5rem auto;
+      padding: 0 1.25rem 1rem 1.25rem;
+    }
+
+    /* Hero section */
     .hero {
-      margin-bottom: 1.5rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.1fr);
+      gap: 1.75rem;
+      align-items: center;
+      margin-bottom: 1.75rem;
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .hero-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.25), rgba(15, 23, 42, 0.95));
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
     }
 
     .hero-title {
-      font-size: clamp(1.8rem, 3vw, 2.2rem);
-      font-weight: 700;
+      font-size: clamp(2.1rem, 4vw, 2.6rem);
+      line-height: 1.1;
       margin-bottom: 0.5rem;
     }
 
+    .hero-title span {
+      background: linear-gradient(135deg, #22d3ee, #a855f7);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
     .hero-subtitle {
-      color: #9ca3af;
-      font-size: 0.95rem;
-      max-width: 40rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      max-width: 32rem;
+      margin-bottom: 1.2rem;
     }
 
-    /* Game meta panel */
-    .panel {
-      background: #020617;
-      border-radius: 0.75rem;
-      border: 1px solid #1e293b;
-      padding: 1.2rem 1.4rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.75);
-    }
-
-    .panel-header {
+    .hero-stats {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 0.75rem;
+      gap: 1rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .hero-stat-pill {
+      padding: 0.4rem 0.9rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      background: linear-gradient(to bottom right, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.7));
+    }
+
+    .hero-stat-pill strong {
+      font-size: 0.9rem;
+      color: var(--text-main);
+    }
+
+    /* Game selection + away time */
+    .panel {
+      background: linear-gradient(to bottom right, #050816, #020617);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      padding: 1.15rem 1.2rem;
+      box-shadow: var(--shadow-soft);
     }
 
     .panel-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .panel-tag {
-      font-size: 0.75rem;
-      padding: 0.15rem 0.5rem;
-      border-radius: 999px;
-      border: 1px solid #334155;
-      color: #9ca3af;
-    }
-
-    .panel-body {
       font-size: 0.9rem;
-      color: #d1d5db;
-      line-height: 1.5;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
     }
 
-    .meta-list {
-      margin-top: 0.5rem;
-      padding-left: 1rem;
+    .panel-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
     }
 
-    .meta-list li {
-      margin-bottom: 0.25rem;
+    .grid-choices {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.55rem;
     }
 
-    /* Form section */
-    .input-row {
+    @media (max-width: 520px) {
+      .grid-choices {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .choice {
+      position: relative;
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, rgba(148, 163, 184, 0.12), #020617);
+      border: 1px solid rgba(31, 41, 55, 0.95);
+      padding: 0.55rem 0.7rem;
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-top: 0.75rem;
+      align-items: center;
+      gap: 0.6rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.05s, box-shadow 0.15s;
+      font-size: 0.78rem;
     }
 
-    .input-row input,
-    .input-row select {
-      padding: 0.4rem 0.6rem;
-      border-radius: 0.5rem;
-      border: 1px solid #1f2937;
-      background: #020617;
-      color: #e5e7eb;
-      font-size: 0.85rem;
+    .choice:hover {
+      border-color: rgba(96, 165, 250, 0.9);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
     }
 
-    .primary-btn {
-      padding: 0.45rem 0.9rem;
-      border-radius: 0.6rem;
+    .choice.active {
+      background: radial-gradient(circle at 0 0, rgba(168, 85, 247, 0.35), #020617);
+      border-color: rgba(168, 85, 247, 0.9);
+      box-shadow: 0 18px 50px rgba(88, 28, 135, 0.9);
+    }
+
+    .choice-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 11px;
+      background: #0b1120;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      overflow: hidden;
+    }
+
+    .choice-main {
+      font-weight: 500;
+    }
+
+    .choice-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .badge-status {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      font-size: 0.6rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: var(--radius-pill);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .badge-status.minor { color: #facc15; }
+    .badge-status.major { color: var(--accent-red); }
+    .badge-status.stable { color: var(--accent-green); }
+
+    .panel-footer {
+      margin-top: 0.8rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-wide {
+      width: 100%;
+      margin-top: 0.9rem;
+      border-radius: 999px;
+      padding: 0.55rem 0.9rem;
       border: none;
-      background: linear-gradient(135deg, #22d3ee, #3b82f6);
-      color: #020617;
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      color: #f9fafb;
       font-weight: 600;
       font-size: 0.85rem;
       cursor: pointer;
+      box-shadow: 0 20px 50px rgba(168, 85, 247, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
       transition: transform 0.05s, box-shadow 0.1s;
     }
 
-    .primary-btn:hover {
+    .btn-wide:hover {
       transform: translateY(-1px);
-      box-shadow: 0 12px 25px rgba(56, 189, 248, 0.25);
+      box-shadow: 0 22px 60px rgba(168, 85, 247, 0.85);
     }
 
-    /* Per-game sections */
-    .game-section {
-      display: none;
+    /* Games overview + cards row */
+    .section-heading {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
     }
 
-    .game-section.active {
-      display: block;
+    .section-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .stat-pill {
+      border-radius: var(--radius-pill);
+      border: 1px dashed rgba(55, 65, 81, 0.9);
+      padding: 0.35rem 0.8rem;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .stat-number {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .cards-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 0.9rem;
+    }
+
+    .game-card {
+      position: relative;
+      background: radial-gradient(circle at top, rgba(37, 99, 235, 0.25), #020617);
+      border-radius: 16px;
+      border: 1px solid rgba(31, 41, 55, 1);
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.8);
+      cursor: pointer;
+      transition: transform 0.08s, box-shadow 0.12s, border-color 0.12s;
+      min-height: 160px;
+    }
+
+    .game-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(96, 165, 250, 1);
+      box-shadow: 0 24px 55px rgba(15, 23, 42, 0.95);
+    }
+
+    .game-card-header {
+      padding: 0.55rem 0.7rem 0 0.7rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .card-tag {
+      padding: 0.1rem 0.5rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .card-tag.stable { color: var(--accent-green); border-color: rgba(22, 163, 74, 0.7); }
+    .card-tag.major { color: var(--accent-red); border-color: rgba(248, 113, 113, 0.7); }
+    .card-tag.minor { color: #facc15; border-color: rgba(234, 179, 8, 0.7); }
+
+    .game-card-body {
+      padding: 0.65rem 0.7rem 0.7rem 0.7rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      font-size: 0.78rem;
+    }
+
+    .game-card-title {
+      font-weight: 600;
+    }
+
+    .game-card-genre {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .game-card-meta {
+      margin-top: 0.25rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
     }
 
     footer {
+      border-top: 1px solid rgba(15, 23, 42, 0.95);
+      padding: 0.7rem 1.25rem 1rem 1.25rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
       text-align: center;
-      font-size: 0.75rem;
-      color: #6b7280;
-      padding: 0.75rem 0 1rem 0;
-      border-top: 1px solid #1f2937;
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo">Metafy</div>
-    <nav>
-      <button class="nav-btn active" data-game="warzone">Warzone</button>
-      <button class="nav-btn" data-game="fortnite">Fortnite</button>
-      <button class="nav-btn" data-game="valorant">Valorant</button>
-    </nav>
+    <div class="nav-inner">
+      <div class="logo-wrap">
+        <div class="logo-icon">M</div>
+        <div>
+          <div class="logo-text-main">METAFY</div>
+          <div class="logo-text-sub">Meta analysis for live games</div>
+        </div>
+      </div>
+
+      <div class="nav-links">
+        <a href="#" class="nav-pill active">Dashboard</a>
+        <a href="#" class="nav-pill">Browse</a>
+        <a href="#" class="nav-pill">I’m Back</a>
+        <div class="nav-cta">
+          <button class="btn-outline" type="button">Sign In</button>
+          <button class="btn-filled" type="button">Create Account</button>
+        </div>
+      </div>
+    </div>
   </header>
 
   <main>
-    <section class="hero">
-      <h1 class="hero-title">Meta analysis for your favorite games</h1>
-      <p class="hero-subtitle">
-        Select a game to view a quick snapshot of the current meta, then refine results with filters like platform, mode, or skill bracket.
-      </p>
-    </section>
+    <div class="page">
 
-    <!-- Warzone meta -->
-    <section id="warzone" class="game-section active">
-      <div class="panel">
-        <div class="panel-header">
-          <h2 class="panel-title">Warzone – Current Meta Snapshot</h2>
-          <span class="panel-tag">Example data</span>
-        </div>
-        <div class="panel-body">
-          <p>These are placeholder notes you can replace with live stats or your own curated summaries.</p>
-          <ul class="meta-list">
-            <li>Popular AR: Kastov‑762 with high‑damage mid‑range setup.</li>
-            <li>Preferred SMG: HRM‑9 for aggressive close‑quarters fights.</li>
-            <li>Utility: Smokes and drill charges for rotations and building clears.</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <h3 class="panel-title">Filter & request analysis</h3>
-        </div>
-        <div class="panel-body">
-          <p>Use this section later for user input and dynamic analysis.</p>
-          <div class="input-row">
-            <select>
-              <option>All skill levels</option>
-              <option>Casual</option>
-              <option>Ranked / competitive</option>
-            </select>
-
-            <select>
-              <option>All platforms</option>
-              <option>PC</option>
-              <option>Console</option>
-            </select>
-
-            <input type="text" placeholder="Optional: weapon / comp name">
-
-            <button class="primary-btn" type="button">Analyze meta</button>
+      <!-- HERO + LEFT COLUMN -->
+      <section class="hero">
+        <div>
+          <div class="hero-label">
+            <span>🎮 Your gaming command center</span>
+          </div>
+          <h1 class="hero-title">
+            What’s <span>happening</span> in your games?
+          </h1>
+          <p class="hero-subtitle">
+            Get instant clarity on meta shifts, patch notes, and community trends across your favorite titles. No research needed—just open, pick a game, and know what to play.
+          </p>
+          <div class="hero-stats">
+            <div class="hero-stat-pill">
+              <strong>0</strong>&nbsp;Games followed
+            </div>
+            <div class="hero-stat-pill">
+              <strong>0</strong>&nbsp;Major shifts
+            </div>
+            <div class="hero-stat-pill">
+              <strong>0</strong>&nbsp;Stable games
+            </div>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- Fortnite meta -->
-    <section id="fortnite" class="game-section">
-      <div class="panel">
-        <div class="panel-header">
-          <h2 class="panel-title">Fortnite – Current Meta Snapshot</h2>
-          <span class="panel-tag">Example data</span>
-        </div>
-        <div class="panel-body">
-          <p>Swap this placeholder copy with your Fortnite meta notes once you define them.</p>
-          <ul class="meta-list">
-            <li>Build mode favors high‑mobility loadouts and fast harvesting.</li>
-            <li>No‑build focuses on burst rifles and strong cover control.</li>
-            <li>Rotations built around vehicles and mobility items.</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+        <!-- RIGHT: CHOOSE GAME + AWAY TIME -->
+        <div class="panel">
+          <div class="panel-title">Welcome back!</div>
+          <div class="panel-sub">
+            Tell Metafy which game you want to analyze and how long you’ve been away. You’ll get a catch‑up summary tailored to that gap.
+          </div>
 
-    <!-- Valorant meta -->
-    <section id="valorant" class="game-section">
-      <div class="panel">
-        <div class="panel-header">
-          <h2 class="panel-title">Valorant – Current Meta Snapshot</h2>
-          <span class="panel-tag">Example data</span>
+          <div style="margin-bottom: 0.75rem;">
+            <div class="panel-title" style="font-size: 0.82rem;">1. Choose a game</div>
+            <div class="grid-choices" id="game-choices">
+              <button class="choice active" data-game="valorant" type="button">
+                <div class="choice-icon">V</div>
+                <div>
+                  <div class="choice-main">Valorant</div>
+                  <div class="choice-sub">Tactical shooter</div>
+                </div>
+                <span class="badge-status minor">Minor changes</span>
+              </button>
+
+              <button class="choice" data-game="fortnite" type="button">
+                <div class="choice-icon">F</div>
+                <div>
+                  <div class="choice-main">Fortnite</div>
+                  <div class="choice-sub">Battle royale</div>
+                </div>
+                <span class="badge-status major">Major shift</span>
+              </button>
+
+              <button class="choice" data-game="warzone" type="button">
+                <div class="choice-icon">WZ</div>
+                <div>
+                  <div class="choice-main">Warzone</div>
+                  <div class="choice-sub">Battle royale</div>
+                </div>
+                <span class="badge-status stable">Stable</span>
+              </button>
+
+              <button class="choice" data-game="cs2" type="button">
+                <div class="choice-icon">CS</div>
+                <div>
+                  <div class="choice-main">Counter‑Strike 2</div>
+                  <div class="choice-sub">Tactical shooter</div>
+                </div>
+                <span class="badge-status stable">Stable</span>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <div class="panel-title" style="font-size: 0.82rem;">2. How long were you away?</div>
+            <div class="grid-choices" id="away-choices">
+              <button class="choice active" data-away="1w" type="button">
+                <div>
+                  <div class="choice-main">1 Week</div>
+                  <div class="choice-sub">Quick catch‑up</div>
+                </div>
+              </button>
+              <button class="choice" data-away="2w" type="button">
+                <div>
+                  <div class="choice-main">2 Weeks</div>
+                  <div class="choice-sub">Minor updates</div>
+                </div>
+              </button>
+              <button class="choice" data-away="1m" type="button">
+                <div>
+                  <div class="choice-main">1 Month</div>
+                  <div class="choice-sub">Moderate changes</div>
+                </div>
+              </button>
+              <button class="choice" data-away="3m" type="button">
+                <div>
+                  <div class="choice-main">3+ Months</div>
+                  <div class="choice-sub">Major evolution</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-wide" type="button" id="generate-btn">
+            ⚡ Generate my catch‑up summary
+          </button>
         </div>
-        <div class="panel-body">
-          <p>Use this area for agent comps, map‑specific setups, and economy tips.</p>
-          <ul class="meta-list">
-            <li>Double‑initiator comps on info‑heavy maps.</li>
-            <li>Controller choice varies by map and team comfort.</li>
-            <li>Emphasis on consistent rifle rounds over eco hero plays.</li>
-          </ul>
+      </section>
+
+      <!-- GAMES OVERVIEW & BROWSE CARDS -->
+      <section>
+        <div class="section-heading">Your games</div>
+        <div class="section-sub">Quick overview of the games you follow (sample layout for now).</div>
+
+        <div class="panel" style="margin-bottom: 1.1rem;">
+          <div class="stats-row">
+            <div class="stat-pill">
+              <span class="stat-number">0</span><span>tracked games</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-number">0</span><span>major shifts detected</span>
+            </div>
+            <div class="stat-pill">
+              <span class="stat-number">0</span><span>stable metas</span>
+            </div>
+          </div>
+          <div class="section-sub">
+            Sign in later to sync followed games across devices and keep your meta dashboard personalized.
+          </div>
         </div>
-      </div>
-    </section>
+
+        <div class="section-heading">Browse games</div>
+        <div class="section-sub">Discover popular titles and preview their current meta status.</div>
+
+        <div class="cards-row">
+          <article class="game-card">
+            <div class="game-card-header">
+              <span>Valorant</span>
+              <span class="card-tag minor">Minor changes</span>
+            </div>
+            <div class="game-card-body">
+              <div class="game-card-title">Valorant</div>
+              <div class="game-card-genre">Tactical shooter</div>
+              <div class="game-card-meta">
+                Updated 2 days ago • Meta leaning toward double‑initiator setups and flexible controllers.
+              </div>
+            </div>
+          </article>
+
+          <article class="game-card">
+            <div class="game-card-header">
+              <span>Fortnite</span>
+              <span class="card-tag major">Major shift</span>
+            </div>
+            <div class="game-card-body">
+              <div class="game-card-title">Fortnite</div>
+              <div class="game-card-genre">Battle royale</div>
+              <div class="game-card-meta">
+                Updated 1 day ago • New items and map changes heavily impacting preferred drop spots and loadouts.
+              </div>
+            </div>
+          </article>
+
+          <article class="game-card">
+            <div class="game-card-header">
+              <span>Warzone</span>
+              <span class="card-tag stable">Stable</span>
+            </div>
+            <div class="game-card-body">
+              <div class="game-card-title">Warzone</div>
+              <div class="game-card-genre">Battle royale</div>
+              <div class="game-card-meta">
+                Updated 3 days ago • AR/SMG core unchanged; tuning tweaks only slightly adjusting top builds.
+              </div>
+            </div>
+          </article>
+
+          <article class="game-card">
+            <div class="game-card-header">
+              <span>League of Legends</span>
+              <span class="card-tag stable">Stable</span>
+            </div>
+            <div class="game-card-body">
+              <div class="game-card-title">League of Legends</div>
+              <div class="game-card-genre">MOBA</div>
+              <div class="game-card-meta">
+                Updated 5 days ago • Meta focused on early objective control and roaming mids.
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
   </main>
 
   <footer>
-    © 2026 Metafy – Personal meta analysis tool.
+    © 2026 Metafy – Meta analysis tool for competitive and casual players.
   </footer>
 
   <script>
-    // Simple tab navigation for games
-    const navButtons = document.querySelectorAll(".nav-btn");
-    const sections = document.querySelectorAll(".game-section");
-
-    navButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const game = btn.getAttribute("data-game");
-
-        // Update button state
-        navButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        // Show selected section
-        sections.forEach(sec => {
-          sec.classList.toggle("active", sec.id === game);
+    // Simple toggle logic for choices (visual only for now)
+    function wireChoiceGroup(groupId) {
+      const group = document.getElementById(groupId);
+      if (!group) return;
+      const choices = group.querySelectorAll(".choice");
+      choices.forEach(choice => {
+        choice.addEventListener("click", () => {
+          choices.forEach(c => c.classList.remove("active"));
+          choice.classList.add("active");
         });
       });
+    }
+
+    wireChoiceGroup("game-choices");
+    wireChoiceGroup("away-choices");
+
+    document.getElementById("generate-btn").addEventListener("click", () => {
+      const gameActive = document.querySelector("#game-choices .choice.active");
+      const awayActive = document.querySelector("#away-choices .choice.active");
+      const game = gameActive ? gameActive.dataset.game : "unknown game";
+      const away = awayActive ? awayActive.dataset.away : "unknown gap";
+      alert(`This button will later generate a meta summary for ${game.toUpperCase()} with away time: ${away}.`);
     });
   </script>
 </body>
